@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Mirror</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', sans-serif; /* Changed font to Roboto */
+        background-color: black;
+        color: white;
+        display: flex;
+        justify-content: flex-end; /* Move contents to the right of the screen */
+        align-items: center; /* Center vertically */
+        height: 100vh;
+    }
+    #mirror-container {
+        text-align: left;
+        padding: 20px; /* Added padding for better spacing */
+        margin-right: 20px; /* Add margin to move container away from the right edge */
+    }
+    #clock {
+    font-size: 100px;
+    font-weight: bold;
+    color: white;
+    animation: slideIn 1s ease forwards; /* Animation added */
+    margin-bottom: 20px;
+    position: absolute;
+    top: 20px; /* Adjust top position */
+    left: 20px; /* Adjust left position */
+}
+#weather {
+    margin-top: 20px; /* Add margin top for space */
+    font-size: 32px;
+    color: white;
+    animation: fadeIn 1s ease forwards; /* Animation added */
+    position:fixed;
+    right: 50px;
+    top: 140px;
+}
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Style for the calendar */
+#calendar-table {
+margin-bottom: 20px; /* Add margin bottom for space */
+position:fixed;
+right: 0;
+border-collapse: collapse;
+
+}
+
+#calendar-table th, #calendar-table td {
+    padding: 5px;
+    border: 1px solid gold;
+    text-align: center;
+    width: 50px;
+}
+#quotes {
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-top: 500px;
+    font-family: 'Times New Roman', serif;
+}
+
+</style>
+</head>
+<body>
+<div id="mirror-container">
+    <div id="clock"></div>
+    <div id="weather"></div>
+    <div id="holidays">
+        <table id="calendar-table"></table>
+    </div>
+    <div id="quotes"></div>
+</div>
+
+<script>
+    // Function to get and display current time
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        document.getElementById('clock').textContent = `${hours}:${minutes}`;
+    }
+
+    // Function to fetch and display weather forecast
+    async function updateWeather(location) {
+        const apiKey = '3ed3625376c65ae31fb416c1f5c76e6f';
+        const url = `https://api.openweathermap.org/data/2.5/forecast?id=1261481&appid=3ed3625376c65ae31fb416c1f5c76e6f`; // Corrected protocol to HTTPS
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            // Extracting the forecast for the next few hours (e.g., the first entry)
+            const forecast = data.list[0];
+            const weatherDescription = forecast.weather[0].description;
+            const temperature = forecast.main.temp;
+            document.getElementById('weather').textContent = `${weatherDescription}, ${temperature}°F`;
+        } catch (error) {
+            console.error('Error fetching weather forecast:', error);
+        }
+    }
+
+    // Function to display a simple calendar for the current month
+    function displayCalendar() {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Get the number of days in the current month
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay(); // Get the day of the week for the first day of the month
+
+        let calendarHTML = '<table id="calendar-table"><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr><tr>';
+
+        // Add empty cells for the days before the first day of the month
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            calendarHTML += '<td></td>';
+        }
+
+        // Add cells for each day of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+            calendarHTML += `<td>${day}</td>`;
+            if ((firstDayOfMonth + day) % 7 === 0) { // Start a new row every 7 days (Sunday to Saturday)
+                calendarHTML += '</tr><tr>';
+            }
+        }
+
+        // Add empty cells to complete the last row
+        const remainingCells = 7 - ((firstDayOfMonth + daysInMonth) % 7);
+        for (let i = 0; i < remainingCells; i++) {
+            calendarHTML += '<td></td>';
+        }
+
+        calendarHTML += '</tr></table>';
+        document.getElementById('calendar-table').innerHTML = calendarHTML;
+    }
+
+    // Function to fetch and display quotes
+    async function updateQuotes() {
+        const url = 'https://api.quotable.io/random';
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            const quote = data.content;
+            document.getElementById('quotes').textContent = `"${quote}" - ${data.author}`;
+        } catch (error) {
+            console.error('Error fetching quotes:', error);
+        }
+    }
+
+    // Initial setup
+    updateTime(); // Update time immediately
+    setInterval(updateTime, 1000); // Update time every second
+    updateWeather('1261481'); // Update weather forecast (replace 'YourLocation' with actual location)
+    displayCalendar(); // Display calendar for the current month
+    updateQuotes(); // Update quotes
+</script>
+</body>
+</html>

@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Anton', 'sans=serif';
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: black;
+}
+
+.clock {
+  position: relative;
+  display: flex;
+  gap: 15px; /* Adjusted gap */
+}
+
+.clock .digital {
+  position: relative;
+  width: 90px; /* Adjusted width */
+  height: 90px; /* Adjusted height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #c9d5e0;
+  border-radius: 22.5px; /* Adjusted border radius */
+  box-shadow: 15px 15px 15px -7.5px rgba(0, 0, 0, 0.15),
+              inset 11.25px 11.25px 7.5px rgba(255, 255, 255, 0.5),
+              -11.25px -11.25px 26.25px rgba(255, 255, 255, 0.35),
+              inset -0.75px -0.75px 7.5px rgba(0, 0, 0, 0.2); /* Adjusted box shadow */
+}
+
+.clock .digital .screen {
+  position: absolute;
+  inset: 15px; /* Adjusted inset */
+  background: #152b4a;
+  border-radius: 15px; /* Adjusted border radius */
+  box-shadow: 3.75px 3.75px 11.25px 0 #152b4a66,
+              inset 3.75px 3.75px 3.75px rgba(255, 255, 255, 0.35),
+              -4.5px -4.5px 7.5px rgba(255, 255, 255, 1); /* Adjusted box shadow */
+}
+
+.clock .digital .screen::before {
+  content: attr(data-text);
+  position: absolute;
+  bottom: -15.75px; /* Adjusted bottom */
+  left: 50%;
+  transform: translateX(-50%) scale(0.75);
+  letter-spacing: 0.075em; /* Adjusted letter spacing */
+  color: #333;
+  text-transform: uppercase;
+}
+
+.clock .digital .time {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.clock .digital .time div {
+  position: relative;
+  font-size: 2.175em; /* Adjusted font size */
+  color: var(--clr);
+  letter-spacing: 0.075em; /* Adjusted letter spacing */
+  margin-left: 0.075em; /* Adjusted margin */
+}
+
+.clock .digital:nth-last-child(2) .time div {
+  -webkit-text-stroke: 1.5px var(--clr); /* Adjusted text stroke */
+}
+
+.clock .digital:last-child::before {
+  content: '';
+  position: absolute;
+  width: 4.5px; /* Adjusted width */
+  height: 4.5px; /* Adjusted height */
+  background: #152b4a;
+  border: 1.5px solid #fff; /* Adjusted border */
+  z-index: 100000;
+  border-radius: 50%;
+}
+
+.clock .digital:last-child::after {
+  content: '';
+  position: absolute;
+  inset: 15px; /* Adjusted inset */
+  background: #152b4a;
+  border-radius: 50%;
+  box-shadow: 3.75px 3.75px 11.25px 0 #152b4a66,
+              inset 3.75px 3.75px 3.75px rgba(255, 255, 255, 0.35),
+              -4.5px -4.5px 7.5px rgba(255, 255, 255, 1); /* Adjusted box shadow */
+}
+
+.box {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 1000;
+}
+
+.box::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  transform: translateX(-50%);
+  width: 1.5px; /* Adjusted width */
+  height: 22.5px; /* Adjusted height */
+  background: var(--clr);
+  border-radius: 3px; /* Adjusted border radius */
+}
+
+.box:nth-child(1):after {
+  height: 15px; /* Adjusted height */
+  width: 3px; /* Adjusted width */
+}
+
+.box:nth-child(2):after {
+  height: 18.75px; /* Adjusted height */
+  width: 2.25px; /* Adjusted width */
+}
+
+#ampm {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  font-size: 12px;
+  transform: translateX(-50%) scale(0.75);
+  color: #333;
+  letter-spacing: 0.075em; /* Adjusted letter spacing */
+}

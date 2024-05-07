@@ -1,0 +1,117 @@
+body {
+  background: black;
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  align-items: right;
+  justify-content: right;
+  height: 100vh;
+  margin: 0;
+}
+
+#weather-container {
+  background: rgba(255, 255, 255, 0.3);
+  max-width: 400px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  transform: scale(0.75);
+  transform-origin: top left; /* Add this line */
+}
+
+h2, label, p {
+  color: #fff;
+  margin: 8px 0;
+}
+
+input {
+  width: calc(100% - 16px);
+  padding: 8px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  border: 1px solid white;
+  margin-top: 20px;
+}
+
+button {
+  background: #8b8b8b;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 20px;
+  width: 100px;
+  font-size: 15px;
+}
+
+button:hover {
+  background: #adadad;
+}
+
+#temp-div p {
+  font-size: 60px;
+  margin-top: -30px;
+}
+
+#weather-info {
+  font-size: 20px;
+}
+
+#weather-icon {
+  width: 200px;
+  height: 200px;
+  margin: 0 auto 10px; 
+  margin-bottom: 0;
+  display: none;
+}
+
+#hourly-forecast {
+  margin-top: 50px;
+  overflow-x: auto;
+  white-space: nowrap;
+  display: flex;
+  justify-content: space-between;
+  scrollbar-width: thin;
+  scrollbar-color: #000000 #e8c8ff; 
+}
+
+.hourly-item {
+  flex: 0 0 auto;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 10px;
+  color: white;
+}
+
+.hourly-item img {
+  width: 30px;
+  height: 30px;
+  margin-bottom: 5px;
+}
+
+#hourly-heading {
+  color: #fff;
+  margin-top: 10px;
+}
+#hourly-forecast::-webkit-scrollbar {
+  width: 8px;
+}
+
+#hourly-forecast::-webkit-scrollbar-track {
+  background: #948d99;
+}
+
+#hourly-forecast::-webkit-scrollbar-thumb {
+  background-color: #000000;
+  border-radius: 10px;
+  border: 2px solid #f7edff;
+}
+
+#hourly-forecast::-webkit-scrollbar-thumb:hover {
+  background-color: #000000;
+}

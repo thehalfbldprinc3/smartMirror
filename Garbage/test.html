@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Mirror</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Roboto', sans-serif; /* Changed font to Roboto */
+        background-color: black;
+        color: white;
+        display: flex;
+        justify-content: flex-end; /* Move contents to the right of the screen */
+        align-items: center; /* Center vertically */
+        height: 100vh;
+    }
+    #mirror-container {
+        text-align: left;
+        padding: 20px; /* Added padding for better spacing */
+        margin-right: 20px; /* Add margin to move container away from the right edge */
+    }
+    #clock {
+    font-size: 100px;
+    font-weight: bold;
+    color: white;
+    animation: slideIn 1s ease forwards; /* Animation added */
+    margin-bottom: 20px;
+    position: absolute;
+    top: 20px; /* Adjust top position */
+    left: 20px; /* Adjust left position */
+}
+#weather {
+    margin-top: 20px; /* Add margin top for space */
+    font-size: 32px;
+    color: white;
+    animation: fadeIn 1s ease forwards; /* Animation added */
+    position:fixed;
+    right: 50px;
+    top: 140px;
+}
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-100%);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Style for the calendar */
+#calendar-table {
+margin-bottom: 20px; /* Add margin bottom for space */
+position:fixed;
+right: 0;
+border-collapse: collapse;
+
+}
+
+#calendar-table th, #calendar-table td {
+    padding: 5px;
+    border: 1px solid gold;
+    text-align: center;
+    width: 50px;
+}
+#quotes {
+    font-size: 20px;
+    margin-bottom: 20px;
+    padding-top: 500px;
+    font-family: 'Times New Roman', serif;
+}
+
+#spotify {
+        margin-top: 20px; /* Add margin top for space */
+        font-size: 24px;
+        color: gold;
+        animation: fadeIn 1s ease forwards; /* Animation added */
+        position: fixed;
+        right: 50px;
+        top: 450px; /* Adjust top position */
+    }
+
+
+</style>
+</head>
+<body>
+<div id="mirror-container">
+    <div id="clock"></div>
+    <div id="weather"></div>
+    <div id="holidays">
+        <table id="calendar-table"></table>
+    </div>
+    <div id="quotes"></div>
+    <div id="news"></div>
+    <div id="spotify"></div>
+</div>
+
+<script>
+    // Function to get and display current time
+    function updateTime() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        document.getElementById('clock').textContent = `${hours}:${minutes}`;
+    }
+
+    // Function to fetch and display weather forecast
+    async function updateWeather(location) {
+        const apiKey = '3ed3625376c65ae31fb416c1f5c76e6f';
+        const url = `https://api.openweathermap.org/data/2.5/forecast?id=1261481&appid=3ed3625376c65ae31fb416c1f5c76e6f`; // Corrected protocol to HTTPS
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            // Extracting the forecast for the next few hours (e.g., the first entry)
+            const forecast = data.list[0];
+            const weatherDescription = forecast.weather[0].description;
+            const temperature = forecast.main.temp;
+            document.getElementById('weather').textContent = `${weatherDescription}, ${temperature}°F`;
+        } catch (error) {
+            console.error('Error fetching weather forecast:', error);
+        }
+    }
+
+    // Function to display a simple calendar for the current month
+    function displayCalendar() {
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth();
+        const currentYear = currentDate.getFullYear();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate(); // Get the number of days in the current month
+        const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay(); // Get the day of the week for the first day of the month
+
+        let calendarHTML = '<table id="calendar-table"><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr><tr>';
+
+        // Add empty cells for the days before the first day of the month
+        for (let i = 0; i < firstDayOfMonth; i++) {
+            calendarHTML += '<td></td>';
+        }
+
+        // Add cells for each day of the month
+        for (let day = 1; day <= daysInMonth; day++) {
+            calendarHTML += `<td>${day}</td>`;
+            if ((firstDayOfMonth + day) % 7 === 0) { // Start a new row every 7 days (Sunday to Saturday)
+                calendarHTML += '</tr><tr>';
+            }
+        }
+
+        // Add empty cells to complete the last row
+        const remainingCells = 7 - ((firstDayOfMonth + daysInMonth) % 7);
+        for (let i = 0; i < remainingCells; i++) {
+            calendarHTML += '<td></td>';
+        }
+
+        calendarHTML += '</tr></table>';
+        document.getElementById('calendar-table').innerHTML = calendarHTML;
+    }
+
+    // Function to fetch and display quotes
+    async function updateQuotes() {
+        const url = 'https://api.quotable.io/random';
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            const quote = data.content;
+            document.getElementById('quotes').textContent = `"${quote}" - ${data.author}`;
+        } catch (error) {
+            console.error('Error fetching quotes:', error);
+        }
+    }
+    async function updateNews() {
+        const apiKey = 'f4ced57051b64ddabd60e674941828f8'; // Replace with your news API key
+        const newsUrl = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${apiKey}`; // Example URL for fetching top headlines from the US
+        try {
+            const response = await fetch(newsUrl);
+            const data = await response.json();
+            // Extract headlines
+            const headlines = data.articles.map(article => article.title);
+            // Display one headline at a time
+            let currentIndex = 0;
+            document.getElementById('news').textContent = headlines[currentIndex]; // Initial display
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % headlines.length;
+                document.getElementById('news').textContent = headlines[currentIndex];
+            }, 30000); // Update every 30 seconds
+        } catch (error) {
+            console.error('Error fetching news headlines:', error);
+        }
+    }
+    function authorizeSpotify() {
+    const clientId = '489563632b6a4f1f9fd2c48f51ce206d'; // Replace with your Spotify Client ID
+    const redirectUri = 'http://localhost/'; // Replace with your specified Redirect URI
+    const scope = 'user-read-currently-playing'; // The scope required for getting the currently playing track
+
+    // Redirect the user to Spotify's authorization endpoint
+    window.location = `https://accounts.spotify.com/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=token`;
+}
+function getAccessToken() {
+    const hashParams = window.location.hash.substr(1).split('&').reduce(function (result, item) {
+        var parts = item.split('=');
+        result[parts[0]] = parts[1];
+        return result;
+    }, {});
+    return hashParams.access_token;
+} 
+    async function updateSpotify() {
+        const accessToken = getAccessToken(); // Replace with your Spotify access token
+        const spotifyUrl = 'https://api.spotify.com/v1/me/player/currently-playing'; // Endpoint to get currently playing track
+        try {
+            const response = await fetch(spotifyUrl, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+            const data = await response.json();
+            if (data.item) {
+                const artist = data.item.artists[0].name;
+                const track = data.item.name;
+                document.getElementById('spotify').textContent = `Now Playing: ${track} by ${artist}`;
+            } else {
+                document.getElementById('spotify').textContent = 'No track currently playing.';
+            }
+        } catch (error) {
+            console.error('Error fetching Spotify data:', error);
+        }
+    }
+
+    // Initial setup
+    updateTime(); 
+    setInterval(updateTime, 1000); // Update time every second
+    updateWeather('1261481'); // Update weather forecast (replace 'YourLocation' with actual location)
+    displayCalendar(); // Display calendar for the current month
+    updateQuotes(); // Update quotes
+    setInterval(updateQuotes, 10000); // Update quotes every 5 minutes (300,000 milliseconds)
+    updateNews();
+    updateSpotify(); // Fetch and display Spotify information
+    setInterval(updateSpotify, 30000);
+</script>
+</body>
+</html>

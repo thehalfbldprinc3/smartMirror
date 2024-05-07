@@ -1,0 +1,17 @@
+.clock {
+  position: absolute;
+  left: 12%;
+  transform: translateX(-50%);
+  top: 75px; /* Adjust this value as needed */
+}
+
+.weather {
+  position: absolute;
+  right: 0; /* Positioning the weather element to the right edge */
+  top: 42%; /* Adjust this value as needed */
+  transform: translateY(-50%);
+}
+
+body {
+  background-color: black;
+}
