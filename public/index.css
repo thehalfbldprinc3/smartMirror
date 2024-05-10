@@ -6,10 +6,14 @@
 }
 
 .weather {
-  position: absolute;
-  right: 0; /* Positioning the weather element to the right edge */
-  top: 42%; /* Adjust this value as needed */
-  transform: translateY(-50%);
+  grid-area: weather;
+  padding: 1em;
+  right: 10px;
+  width: 100%;
+}
+
+.news {
+  grid-area: nav;
 }
 
 body {

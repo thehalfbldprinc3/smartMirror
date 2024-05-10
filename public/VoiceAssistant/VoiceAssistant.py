@@ -4,6 +4,7 @@ import requests
 import datetime
 import random
 import re
+import json
 
 greetings = ["Hello! How can I assist you?",
              "Hi there! What can I do for you today?",
@@ -34,6 +35,23 @@ def get_audio():
             print(e)
             return ""
 
+def load_events():
+    try:
+        with open("events.json", "r") as file:
+            data = file.read()
+            if data:
+                return json.loads(data)
+            else:
+                return {}  # Return an empty dictionary if the file is empty
+    except FileNotFoundError:
+        return {}  # Return an empty dictionary if the file doesn't exist
+    except json.decoder.JSONDecodeError:
+        return {}  # Return an empty dictionary if the file contains invalid JSON data
+
+def save_events(events_dict):
+    with open("events.json", "w") as file:
+        json.dump(events_dict, file)
+
 def get_event_title(engine):
     while True:
         speak(engine, "Please say the title of the event.")
@@ -54,6 +72,7 @@ def get_event_date(engine):
 
 def store_event(event_title, event_date, events_dict):
     events_dict[event_title] = event_date
+    save_events(events_dict)  # Save events to file after storing
     return "Event stored successfully!"
 
 def get_event(event_title, events_dict):
@@ -140,15 +159,18 @@ def main():
     greeting = random.choice(greetings)
     speak(engine, greeting)
     
-    events_dict = {}  # Dictionary to store events
+    # Load events from file
+    events_dict = load_events()
     
     while True:
         query = get_audio()
         if query:
             if "exit" in query:
+                # Save events to file before exiting
+                save_events(events_dict)
                 speak(engine, "Goodbye!")
                 break
-            response = handle_query(query, engine, events_dict)  # Pass 'engine' to handle_query
+            response = handle_query(query, engine, events_dict)
             speak(engine, response)
 
 if __name__ == "__main__":

@@ -9,7 +9,11 @@ body {
 }
 
 #weather-container {
-  background: rgba(255, 255, 255, 0.3);
+  background: linear-gradient(130deg, #111 50px, #292929 0 55px, #111 0 60px, #292929 0 95px, #111 0 100px, #292929 0 120px, #111 0);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
   max-width: 400px;
   padding: 20px;
   border-radius: 15px;
@@ -17,8 +21,8 @@ body {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   text-align: center;
-  transform: scale(0.75);
-  transform-origin: top left; /* Add this line */
+  transform: scale(1.00);
+  transform-origin: top left;
 }
 
 h2, label, p {

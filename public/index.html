@@ -5,16 +5,318 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SmartMirror</title>
   <link rel="stylesheet" href="index.css">
+  <style>
+    *
+    {
+        box-sizing: border-box;
+        font-family: sans-serif;
+    }
+    
+    body
+    {
+        margin: 0;
+        background: #000000;
+        display: grid;
+        grid-template-columns: 2fr 5fr 1fr;
+        row-gap: 2em;
+        grid-template-rows: 200px auto 50px;
+        grid-template-areas: "clock empty weather" "clock empty weather" "nav nav nav";
+        min-height: 100vh;
+        width: 100%;
+    }
+    
+    div#clock
+    {
+        width: relative;
+        height: relative;
+        grid-area: clock;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px;
+    }
+    
+    
+    
+    #outer
+    {
+        position: relative;
+        margin: 10px;
+        background: #000;
+        width: 120px;
+        height: 200px;
+        display: flex;
+    }
+    
+    #outer #footer
+    {
+        position: absolute;
+        bottom: 0;
+        height: 40px;
+        width: 100%;
+        background: #242424;
+        color: #eee;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    #outer div#rings-hour,
+    #outer div#rings-sec,
+    #outer div#rings-min
+    {
+        width: calc(100% - 20px);
+        height: 15px;
+        background: repeating-linear-gradient(to right, #fff , #fff 4px, transparent 4px, transparent 10px);
+        position: absolute;
+        top: -7.5px;
+        left: 13px;
+    }
+    
+    
+    #outer span
+    {
+        position: absolute;
+        margin: 0 10px 10px 10px;
+        background: linear-gradient(130deg, #111 50px, #292929 0 55px, #111 0 60px, #292929 0 95px, #111 0 100px, #292929 0 120px, #111 0);
+        width: 100px;
+        height: 150px;
+        transform: perspective(800px) rotateX(300deg);
+        transform-origin: top;
+        animation: rotate .5s linear forwards;
+        overflow: hidden;
+        color: #fff;
+        display: flex;
+        backface-visibility: initial;
+        font-size: 1.75em;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    @keyframes rotate
+    {
+        to
+        {
+            transform: perspective(800px) rotateX(0deg);
+        }
+    }
+    
+    #outer span div#rings-hour,
+    #outer span div#rings-min,
+    #outer span div#rings-sec
+    {
+        width: calc(100% - 5px);
+        height: 15px;
+        background: repeating-linear-gradient(to right, #fff , #fff 4px, transparent 4px, transparent 10px);
+        position: absolute;
+        top: -7.5px;
+        left: 2.5px;
+    }
+    
+    #clock #divider
+    {
+        height: 60px;
+        width: 15px;
+        transform: translateY(-25.5%);
+        background: linear-gradient(transparent 15px, #fff 15px, #fff 30px, transparent 30px, transparent 45px, #fff 45px);
+    }
+</style>
 </head>
 <body>
-  <div class="clock">
+  <!-- <div class="clock">
     <iframe src="./clock/clock.html" frameborder="0" height="150px" width="450px"></iframe>
-  </div>
+  </div> -->
   <div class="weather">
     <iframe src="./Weather/Weather.html" frameborder="0" height="650px" width="475px"></iframe>
   </div>
   <div class="news">
     <iframe src="./NewsFeed/NewsFeed.html" frameborder="0" width="100%" height="50px"></iframe>
   </div>
+  <div id='clock'>
+    <div id='outer'>
+        <!-- <div id='footer'>Hour</div> -->
+        <div id='rings-hour'></div>
+        <span id="hour">
+            <div id='rings-hour'></div>
+        </span>
+    </div>
+    <span id='divider'></span>
+    <div id='outer'>
+        <!-- <div id='footer'>Minutes</div> -->
+        <div id='rings-min'></div>
+        <span id="minutes">
+            <div id='rings-min'></div>
+        </span>
+    </div>
+    <span id='divider'></span>
+    <div id='outer'>
+        <!-- <div id='footer'>Seconds</div> -->
+        <div id='rings-sec'></div>
+        <span id="seconds">
+            <div id='rings-sec'></div>
+        </span>
+    </div>
+</div>
+<script>
+    // getting all the html elements needed
+    var outer = document.querySelectorAll('#outer')
+    var sec = document.querySelector('#seconds')
+    var min = document.querySelector('#minutes')
+    var hr = document.querySelector('#hour')
+    
+    // getting the new date
+    d = new Date()
+    seconds = d.getSeconds() // extracting seconds
+    minutes = d.getMinutes() // extracting minutes
+    hours = d.getHours() // extracting hours
+    
+    // doing this for 12 hour setup
+    if(hours > 12) 
+    {
+        hours = hours%12
+    }
+    
+    // putting the values in the html tags
+    if(hours < 10)
+    {
+        hr.innerHTML += '<h1>' + 0 + hours + '</h1>'
+    }
+    else
+    {
+        hr.innerHTML += '<h1>' + hours + '</h1>'
+    }
+    // hour value set
+
+
+
+    if(seconds < 10)
+    {
+        sec.innerHTML += '<h1>' + '0' + seconds + '</h1>'
+    }
+    else
+    {
+        sec.innerHTML += '<h1>' + seconds + '</h1>'
+    }
+    // seconds value set
+
+
+
+    if(minutes < 10)
+    {
+        min.innerHTML += '<h1>' + '0' + minutes + '</h1>'
+    }
+    else
+    {
+        min.innerHTML += '<h1>' + minutes + '</h1>'
+    }
+    // minutes value set
+
+
+
+    // updating the values every second
+    var timer = setInterval(() => {
+        function removechildren() 
+        {
+            if(outer[2].childElementCount >= 4) // checking wether seconds element contains enough elements to be removed
+            {
+                outer[2].removeChild(outer[2].children[2])
+            }
+            if(outer[1].childElementCount >= 4) // checking wether minute element contains enough elements to be removed
+            {
+                outer[1].removeChild(outer[1].children[2])
+            }
+            if(outer[0].childElementCount >= 4) // checking wether hour element contains enough elements to be removed
+            {
+                outer[0].removeChild(outer[0].children[2])
+            }
+        }
+        
+        removechildren() // removing children
+        
+        d = new Date() // updating the time every second
+        hours = d.getHours()
+        if(hours > 12)
+        {
+            hours = hours%12
+        }
+        
+        minutes = d.getMinutes()
+        seconds = d.getSeconds()
+        
+        // updating seconds
+        function updateSeconds()
+        {
+            span = document.createElement('span')
+            span.id = 'seconds'
+            span_child = document.createElement('div')
+            span_child.id = 'rings-sec'
+            span.appendChild(span_child)
+            if(seconds < 10)
+            {
+                secondshtml = '<h1>' + '0' + seconds + '</h1>'
+            }
+            else
+            {
+                secondshtml = '<h1>' + seconds + '</h1>'
+            }
+            span.innerHTML += secondshtml
+            outer[2].appendChild(span)
+        }
+        
+        updateSeconds() // calling update seconds function
+        
+        
+        // updating minutes
+        function updateMinutes()
+        {
+            if(seconds == 0)
+            {
+                span2 = document.createElement('span')
+                span2.id = 'minutes'
+                span2_child = document.createElement('div')
+                span2_child.id = 'rings-min'
+                span2.appendChild(span2_child)
+                if(minutes < 10)
+                {
+                    minuteshtml = '<h1>' + '0' + minutes + '</h1>'
+                }
+                else
+                {
+                    minuteshtml = '<h1>' + minutes + '</h1>'
+                }
+                span2.innerHTML += minuteshtml
+                outer[1].appendChild(span2)
+            }
+        }
+        
+        updateMinutes() // calling update minutes function
+        
+        
+        // updating hours
+        function updateHours()
+        {
+            if(minutes == 0 && seconds == 0)
+            {
+                span3 = document.createElement('span')
+                span3.id = 'hour'
+                span3_child = document.createElement('div')
+                span3_child.id = 'rings-hour'
+                span3.appendChild(span3_child)
+                if(hours < 10)
+                {
+                    hourhtml = '<h1>' + 0 + hours + '</h1>'
+                }
+                else
+                {
+                    hourhtml = '<h1>' + hours + '</h1>'
+                }
+                span3.innerHTML += hourhtml
+                outer[0].appendChild(span3)
+            }
+        }
+        
+        updateHours() // calling update hours function
+    }, 1000)
+</script>
 </body>
 </html>
