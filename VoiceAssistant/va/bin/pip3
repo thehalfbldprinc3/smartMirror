@@ -1,4 +1,4 @@
-#!/home/dhruv/Downloads/smartMirrorV2/VoiceAssistant/va/bin/python3
+#!/home/mirror/smartMirrorV2/VoiceAssistant/va/bin/python3
 # -*- coding: utf-8 -*-
 import re
 import sys

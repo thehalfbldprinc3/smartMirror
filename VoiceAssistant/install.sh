@@ -1,7 +1,10 @@
 #!/bin/bash
 
+sudo apt install portaudio19-dev
+
 # Tuple of packages to install
 packages=(
+    "wheel"
     "SpeechRecognition"
     "wolframalpha"
     "pyttsx3"
@@ -14,7 +17,6 @@ packages=(
     "beautifulsoup4"
     "pyaudio"
     "clint"
-    "pywin32"
     "datetime"
     "gtts"
     "pydub"
@@ -24,3 +26,5 @@ packages=(
 for package in "${packages[@]}"; do
     pip3 install "$package"
 done
+
+
