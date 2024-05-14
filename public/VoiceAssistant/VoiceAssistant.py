@@ -1,25 +1,54 @@
 import speech_recognition as sr
-import pyttsx3
+#import pyttsx3
 import requests
 import datetime
 import random
-import re
 import json
+
+from gtts import gTTS
+from gtts import gTTS
+from io import BytesIO
+from pydub import AudioSegment
+from pydub.playback import play
+
+
+def speech(arg):
+
+    mp3_fp = BytesIO()
+    tts = gTTS(arg, lang='en')
+    tts.write_to_fp(mp3_fp)
+
+    # Rewind the BytesIO object
+    mp3_fp.seek(0)
+
+    # Load MP3 data into AudioSegment
+    audio_segment = AudioSegment.from_mp3(mp3_fp)
+
+    # Play the audio
+    play(audio_segment)
+
+
 
 greetings = ["Hello! How can I assist you?",
              "Hi there! What can I do for you today?",
              "Hey! How may I help you?",
              "Greetings! What do you need assistance with?"]
 
+'''
 def initialize_engine():
-    engine = pyttsx3.init()
+    engine = pyttsx3.init(driverName='espeak')
+    voiceRate = 150
+    voiceVol = 1.0
     voices = engine.getProperty('voices')
-    engine.setProperty('voice', voices[1].id)
+
+    engine.setProperty('volume', voiceVol)
+    engine.setProperty('rate',voiceRate)
     return engine
 
 def speak(engine, text):
     engine.say(text)
     engine.runAndWait()
+'''
 
 def get_audio():
     recognizer = sr.Recognizer()
@@ -52,23 +81,25 @@ def save_events(events_dict):
     with open("events.json", "w") as file:
         json.dump(events_dict, file)
 
-def get_event_title(engine):
+def get_event_title():
     while True:
-        speak(engine, "Please say the title of the event.")
+        #speak(engine, "Please say the title of the event.")
+        speech("Please say the title of the event")
         title = get_audio()
         if title:
             return title
         else:
-            speak(engine, "Sorry, I didn't catch that. Please try again.")
+            speech( "Sorry, I didn't catch that. Please try again.")
 
-def get_event_date(engine):
+def get_event_date():
     while True:
-        speak(engine, "Please say the date of the event.")
+#        speak(engine, "Please say the date of the event.")
+        speech("Please say the date of the event")
         date = get_audio()
         if date:
             return date
         else:
-            speak(engine, "Sorry, I didn't catch that. Please try again.")
+            speech("Sorry, I didn't catch that. Please try again.")
 
 def store_event(event_title, event_date, events_dict):
     events_dict[event_title] = event_date
@@ -104,7 +135,7 @@ def get_news():
     response = requests.get(url)
     data = response.json()
     if data['status'] == 'ok':
-        articles = data['articles']
+        articles = data['articles'][:5]
         news = "Here are the top headlines: "
         for article in articles:
             news += article['title'] + ". "
@@ -129,9 +160,9 @@ def suggest_movie():
         return "Sorry, I encountered an error while fetching movie recommendations."
 
 def self_description():
-    return "I am a smart E-bulletin board made by the department of Electronics and Communications BPIT"
+    return "I am a smart E bulletin board made by the department of Electronics and Communications BPIT"
 
-def handle_query(query, engine, events_dict):
+def handle_query(query, events_dict):
     if "weather" in query:
         return get_weather()
     elif "time" in query:
@@ -143,22 +174,25 @@ def handle_query(query, engine, events_dict):
     elif "purpose" in query:
         return self_description()
     elif "store event" in query:
-        speak(engine, "Sure, let's store the event.")
-        event_title = get_event_title(engine)
-        event_date = get_event_date(engine)
+#        speak(engine, "Sure, let's store the event.")
+        speech("Sure, let's store the event.")
+        event_title = get_event_title()
+        event_date = get_event_date()
         return store_event(event_title, event_date, events_dict)
     elif "get event" in query:
-        speak(engine, "Sure, let's retrieve the event.")
-        event_title = get_event_title(engine)
+        #speak(engine, "Sure, let's retrieve the event.")
+        speech("Sure, let's retrieve the event")
+        event_title = get_event_title()
         return get_event(event_title, events_dict)
     else:
         return "Sorry, I didn't understand that."
 
 def main():
-    engine = initialize_engine()
+#    engine = initialize_engine()
     greeting = random.choice(greetings)
-    speak(engine, greeting)
-    
+#    speak(engine, greeting)   
+    speech(greeting)    
+
     # Load events from file
     events_dict = load_events()
     
@@ -168,10 +202,22 @@ def main():
             if "exit" in query:
                 # Save events to file before exiting
                 save_events(events_dict)
-                speak(engine, "Goodbye!")
-                break
-            response = handle_query(query, engine, events_dict)
-            speak(engine, response)
+                speech("Goodbye!")
+                return False
 
-if __name__ == "__main__":
-    main()
+            if "restart" in query: 
+                save_events(events_dict)
+                speech("Restarting E-bulletin board")
+                return True
+
+            response = handle_query(query, events_dict)
+#            print(response)
+            speech(response)
+#            speak(engine, response)
+    
+if __name__ == "__main__": 
+    while True:
+        if main():
+            continue
+        else:
+            break

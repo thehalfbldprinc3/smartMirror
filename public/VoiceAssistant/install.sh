@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# List of packages to install
+# Tuple of packages to install
 packages=(
-    "speech_recognition"
+    "SpeechRecognition"
     "wolframalpha"
     "pyttsx3"
     "wikipedia"
@@ -17,9 +17,12 @@ packages=(
     "pywin32"
     "datetime"
     "random"
+    "gtts"
+    "io"
+    "pydub"
 )
 
 # Install each package using pip
 for package in "${packages[@]}"; do
-    pip install "$package"
+    pip3 install "$package"
 done
