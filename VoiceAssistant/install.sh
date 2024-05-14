@@ -16,9 +16,7 @@ packages=(
     "clint"
     "pywin32"
     "datetime"
-    "random"
     "gtts"
-    "io"
     "pydub"
 )
 
