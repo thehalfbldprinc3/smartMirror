@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install portaudio19-dev
+sudo apt install portaudio19-dev flac
 
 # Tuple of packages to install
 packages=(
