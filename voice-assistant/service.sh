@@ -1,5 +1,0 @@
-
-# run with sudo 
-
-
-cp ./
