@@ -16,6 +16,7 @@
     "express": "^4.19.2",
     "jssoup": "^0.0.15",
     "node-fetch": "^3.3.2",
+    "pdf-to-img": "^2.1.2",
     "tesseract.js": "^5.1.0"
   }
 }
