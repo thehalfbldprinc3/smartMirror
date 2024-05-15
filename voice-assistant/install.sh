@@ -5,6 +5,7 @@ sudo apt install portaudio19-dev flac
 # Tuple of packages to install
 packages=(
     "wheel"
+    "virtualenv"
     "SpeechRecognition"
     "wolframalpha"
     "pyttsx3"
