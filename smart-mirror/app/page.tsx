@@ -43,6 +43,7 @@ export default function Page() {
       )}
 
       <Header />
+      
 
       {/* Main Layout */}
       <div className="flex-grow relative p-6 box-border overflow-hidden">

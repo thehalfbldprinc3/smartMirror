@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import SignInButtons from '@/components/signInButtons'
+import SessionWrapper from '@/app/sessionWrapper';
 
 const Header = () => {
   const [time, setTime] = useState<string>('');
@@ -28,6 +30,9 @@ const Header = () => {
         <h1 className="text-xl font-semibold">{greeting()},<br></br> {ownerName}!</h1>
       </div>
       <div className="text-2xl font-bold">{time}</div>
+      <SessionWrapper>
+        <SignInButtons/>
+      </SessionWrapper>
     </header>
   );
 };

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       model: 'gemini-2.0-flash',
       contents: prompt,
       config: {
-        maxOutputTokens: 50,
+        maxOutputTokens: 100,
         temperature: 0.1,
       },
     });

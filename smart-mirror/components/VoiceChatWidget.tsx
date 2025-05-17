@@ -53,7 +53,7 @@ export default function VoiceAssistantWidget() {
   async function callGeminiAPI(userPrompt: string) {
     try {
       setBotReply('Thinking...');
-
+      const promptWithInstruction = `Please answer briefly in 30 token or less: ${userPrompt}`;
       // Clear any existing timer
       if (botReplyTimerRef.current) {
         clearTimeout(botReplyTimerRef.current);
@@ -64,7 +64,7 @@ export default function VoiceAssistantWidget() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: userPrompt }),
+        body: JSON.stringify({ prompt: promptWithInstruction }),
       });
 
       const data = await res.json();
