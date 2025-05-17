@@ -15,7 +15,7 @@ This is your personal productivity mirror — showing **calendar events**, **wea
 
 - 📅 **Calendar Widget**  
   Displays current date and upcoming events.  
-  *(Google Calendar integration coming soon!)*
+  Google Calendar Integrated
 
 - 🌤️ **Weather Widget**  
   Fetches live weather updates for your location.
@@ -39,7 +39,6 @@ This is your personal productivity mirror — showing **calendar events**, **wea
 ---
 
 ## 🚧 Upcoming Features (Planned)
-- 🔗 **Google Calendar Integration** — sync your events.
 
 ---
 
