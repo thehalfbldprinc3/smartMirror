@@ -41,24 +41,15 @@ export default function Page() {
           <h1 className="text-white text-4xl font-semibold">{getGreeting()}</h1>
         </div>
       )}
-
       <Header />
-      
-
-      {/* Main Layout */}
       <div className="flex-grow relative p-6 box-border overflow-hidden">
-        {/* Calendar - Left Center */}
         <div className="absolute left-8 top-1/2 transform -translate-y-1/2">
           <CalendarWidget />
         </div>
-
-        {/* Weather - Top Right */}
         <div className="absolute top-8 right-8">
           <WeatherWidget />
         </div>
-
-        {/* News - Bottom Center */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+        <div className="absolute bottom-8 left-8">
           <NewsWidget />
         </div>
         <VoiceAssistantWidget/>

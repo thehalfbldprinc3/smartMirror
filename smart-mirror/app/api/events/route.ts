@@ -1,5 +1,3 @@
-// app/api/calendar-events/route.ts
-
 import { google } from 'googleapis';
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
@@ -22,11 +20,11 @@ export async function POST(req: NextRequest) {
     startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(startOfDay);
     endOfDay.setHours(23, 59, 59, 999);
-    // ✅ Set up OAuth2 client with the user's access token
+    
     const oauth2Client = new google.auth.OAuth2();
     oauth2Client.setCredentials({ access_token: session.accessToken });
 
-    // ✅ Use the OAuth2 client here
+    
     const calendar = google.calendar({
       version: 'v3',
       auth: oauth2Client,

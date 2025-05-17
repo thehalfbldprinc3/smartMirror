@@ -12,96 +12,107 @@ type NewsArticle = {
 };
 
 const NewsWidget = () => {
-  const [news, setNews] = useState<NewsArticle[] | null>(null); 
+  const [news, setNews] = useState<NewsArticle[] | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [containerWidth, setContainerWidth] = useState<number | null>(null); 
+  const [contentWidth, setContentWidth] = useState<number>(0);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Fetch news data
   useEffect(() => {
     const fetchNews = async () => {
       try {
         const res = await fetch('/api/news', { next: { revalidate: 60 } });
         if (!res.ok) throw new Error('Failed to fetch news');
         const data = await res.json();
-        if (data.articles) {
-          setNews(data.articles);
-        } else {
-          console.error('Invalid news format:', data);
-          setNews([]); // fallback to empty
-        }
+        setNews(data.articles || []);
       } catch (error) {
         console.error('Error fetching news:', error);
-        setNews([]); // fallback to empty
+        setNews([]);
       }
     };
 
     fetchNews();
   }, []);
 
-  // Measure the width of the widest headline
   useEffect(() => {
-    if (news && news.length > 0 && contentRef.current) {
+    if (!news || news.length === 0) return;
+
+    const calculateMaxWidth = () => {
+      if (!contentRef.current) return;
+
+      const font = window.getComputedStyle(contentRef.current).font || '14px sans-serif';
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      if (!context) return;
+
+      context.font = font;
       let maxWidth = 0;
-      const tempSpan = document.createElement('span');
-      tempSpan.style.visibility = 'hidden';
-      tempSpan.style.position = 'absolute';
-      tempSpan.style.whiteSpace = 'nowrap';
-      tempSpan.style.font = window.getComputedStyle(contentRef.current).font;
-      document.body.appendChild(tempSpan);
+      for (const article of news) {
+        const text = article.title || 'No title available';
+        const metrics = context.measureText(text);
+        maxWidth = Math.max(maxWidth, metrics.width);
+      }
 
-      news.forEach((article) => {
-        tempSpan.textContent = article.title || 'No title available';
-        const width = tempSpan.scrollWidth;
-        if (width > maxWidth) maxWidth = width;
-      });
+      // Add buffer space
+      setContentWidth(maxWidth + 160); // ~160px to account for title + paddings
+    };
 
-      document.body.removeChild(tempSpan);
-      setContainerWidth(maxWidth);
-    }
+    calculateMaxWidth();
   }, [news]);
 
-  // Rotate ticker every 4 seconds with fade & slide
   useEffect(() => {
     if (!news || news.length === 0) return;
 
     const interval = setInterval(() => {
-      setIsTransitioning(true); // Start transition (fade+slide out)
+      setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentIndex((prevIndex) => (prevIndex + 1) % news.length);
-        setIsTransitioning(false); // Fade+slide back in
-      }, 500); // must match transition duration
+        setCurrentIndex((prev) => (prev + 1) % news.length);
+        setIsTransitioning(false);
+      }, 300); // Shorter transition for quicker switch
     }, 4000);
 
     return () => clearInterval(interval);
   }, [news]);
 
+  const currentHeadline = news?.[currentIndex]?.title || 'No title available';
+
   return (
     <div
-      className="bg-primary p-4 rounded-lg shadow-md text-white overflow-hidden"
+      className="rounded-2xl bg-white/10 backdrop-blur-2xl border border-white/20 text-white relative overflow-hidden flex items-center gap-6 px-6 py-4 shadow-[0_8px_32px_0_rgba(31,38,135,0.37)]"
       style={{
-        width: containerWidth ? `${containerWidth}px` : 'auto', 
-        transition: 'width 0.5s ease', 
+        width: `${Math.max(contentWidth, 300)}px`,
+        transition: 'width 0.5s ease',
+        minHeight: '60px',
       }}
     >
-      <h2 className="text-lg font-semibold mb-2">📰 Latest News</h2>
+      {/* Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent rounded-2xl pointer-events-none z-0" />
 
+      {/* Widget Title */}
+      <h2 className="flex items-center gap-2 text-lg font-semibold whitespace-nowrap z-10 relative">
+        <span role="img" aria-label="newspaper"></span> Latest News
+      </h2>
+
+      {/* Content */}
       {news === null ? (
-        <p className="text-sm opacity-60">Loading news...</p>
-      ) : news.length > 0 ? (
+        <p className="text-sm text-gray-300 animate-pulse truncate z-10 relative">
+          Loading news...
+        </p>
+      ) : news.length === 0 ? (
+        <p className="text-sm text-gray-400 truncate z-10 relative">
+          No news available
+        </p>
+      ) : (
         <div
           ref={contentRef}
-          className={`text-sm transition-all duration-500 ease-in-out ${
-            isTransitioning
-              ? 'opacity-0 translate-y-2'
-              : 'opacity-80 translate-y-0'
+          className={`text-sm font-light transition-all duration-300 ease-in-out truncate z-10 relative ${
+            isTransitioning ? 'opacity-0 translate-x-2' : 'opacity-100 translate-x-0'
           }`}
+          style={{ minHeight: '1.5rem' }}
+          title={currentHeadline}
         >
-          {news[currentIndex]?.title || 'No title available'}
+          {currentHeadline}
         </div>
-      ) : (
-        <p className="text-sm opacity-60">No news available</p>
       )}
     </div>
   );

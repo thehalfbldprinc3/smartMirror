@@ -1,23 +1,21 @@
 import { GoogleGenAI } from '@google/genai';
 import { NextRequest, NextResponse } from 'next/server';
 
-// Initialize the AI client with your API key
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// Simple regex-based function to strip markdown
 function cleanMarkdown(text: string): string {
   return text
-    .replace(/\*\*(.*?)\*\*/g, '$1')  // bold
-    .replace(/\*(.*?)\*/g, '$1')      // italic or single *
-    .replace(/_(.*?)_/g, '$1')        // underscore italic
-    .replace(/`(.*?)`/g, '$1')        // inline code
-    .replace(/~~(.*?)~~/g, '$1')      // strikethrough
-    .replace(/\[(.*?)\]\(.*?\)/g, '$1') // links
-    .replace(/#+\s/g, '')             // headings
-    .replace(/>\s/g, '')              // blockquotes
-    .replace(/-\s|\*\s|\+\s/g, '')    // unordered list bullets
-    .replace(/\r?\n|\r/g, ' ')        // newlines to spaces
-    .replace(/\s{2,}/g, ' ')          // extra spaces
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/_(.*?)_/g, '$1')
+    .replace(/`(.*?)`/g, '$1')
+    .replace(/~~(.*?)~~/g, '$1')
+    .replace(/\[(.*?)\]\(.*?\)/g, '$1')
+    .replace(/#+\s/g, '')
+    .replace(/>\s/g, '')
+    .replace(/-\s|\*\s|\+\s/g, '')
+    .replace(/\r?\n|\r/g, ' ')
+    .replace(/\s{2,}/g, ' ')
     .trim();
 }
 
@@ -34,7 +32,6 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Clean response text
     const cleanedReply = cleanMarkdown(response.text);
 
     return NextResponse.json({ reply: cleanedReply });

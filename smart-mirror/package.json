@@ -9,12 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
+    "@fortawesome/react-fontawesome": "^0.2.2",
     "@google/genai": "^0.13.0",
     "@google/generative-ai": "^0.24.0",
     "dotenv": "^16.4.7",
+    "framer-motion": "^12.12.1",
     "googleapis": "^148.0.0",
     "next": "15.2.2",
     "next-auth": "^4.24.11",
+    "open": "^10.1.2",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-speech-recognition": "^3.10.0"
@@ -23,7 +27,7 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/next-auth": "^3.13.0",
-    "@types/node": "^20",
+    "@types/node": "^20.17.47",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

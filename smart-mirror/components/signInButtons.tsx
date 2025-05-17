@@ -6,7 +6,11 @@ export default function AuthButtons() {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    return <p className="mb-4 text-center text-lg opacity-80">Checking auth status...</p>;
+    return (
+      <p className="mb-4 text-center text-lg text-yellow-400 opacity-80">
+        Checking auth status...
+      </p>
+    );
   }
 
   return (
@@ -25,7 +29,7 @@ export default function AuthButtons() {
           )}
           <button
             onClick={() => signOut().catch(err => console.error('Sign out failed:', err))}
-            className="px-4 py-2 rounded-full bg-black bg-opacity-40 text-white text-base shadow-md hover:bg-opacity-60 transition focus:outline-none"
+            className="px-6 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-base shadow-md hover:bg-white/20 transition focus:outline-none"
             aria-label="Sign out"
           >
             Sign out
@@ -34,7 +38,7 @@ export default function AuthButtons() {
       ) : (
         <button
           onClick={() => signIn("google").catch(err => console.error('Sign in failed:', err))}
-          className="px-6 py-3 rounded-full bg-black bg-opacity-40 text-white text-lg shadow-md hover:bg-opacity-60 transition focus:outline-none"
+          className="px-6 py-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-lg shadow-md hover:bg-white/20 transition focus:outline-none"
           aria-label="Sign in with Google"
         >
           Sign in

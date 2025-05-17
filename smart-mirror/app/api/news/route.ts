@@ -19,7 +19,7 @@ export async function GET() {
 
     console.log('NewsAPI Status:', res.status);
 
-    const data = await res.json(); // ✅ read once
+    const data = await res.json();
     console.log('NewsAPI Body:', data);
 
     return NextResponse.json(data);

@@ -1,13 +1,16 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMicrophone } from '@fortawesome/free-solid-svg-icons';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function VoiceAssistantWidget() {
   const [isListening, setIsListening] = useState(false);
   const [userText, setUserText] = useState('');
   const [botReply, setBotReply] = useState('');
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
-  const botReplyTimerRef = useRef<NodeJS.Timeout | null>(null); // New timer ref
+  const botReplyTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const SpeechRecognitionClass =
@@ -25,7 +28,6 @@ export default function VoiceAssistantWidget() {
 
     recognition.onresult = (event: SpeechRecognitionEvent) => {
       const transcript = event.results[0][0].transcript;
-      console.log('User said:', transcript);
       setUserText(transcript);
       callGeminiAPI(transcript);
     };
@@ -54,23 +56,18 @@ export default function VoiceAssistantWidget() {
     try {
       setBotReply('Thinking...');
       const promptWithInstruction = `Please answer briefly in 30 token or less: ${userPrompt}`;
-      // Clear any existing timer
-      if (botReplyTimerRef.current) {
-        clearTimeout(botReplyTimerRef.current);
-      }
+
+      if (botReplyTimerRef.current) clearTimeout(botReplyTimerRef.current);
 
       const res = await fetch('/api/gemini', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: promptWithInstruction }),
       });
 
       const data = await res.json();
       setBotReply(data.reply);
 
-      // Set timer to auto-hide reply after 8 seconds
       botReplyTimerRef.current = setTimeout(() => {
         setBotReply('');
         setUserText('');
@@ -79,7 +76,6 @@ export default function VoiceAssistantWidget() {
       console.error('Gemini API error:', error);
       setBotReply('Sorry, I had an issue processing that.');
 
-      // Hide error after 8 seconds too
       botReplyTimerRef.current = setTimeout(() => {
         setBotReply('');
         setUserText('');
@@ -88,50 +84,58 @@ export default function VoiceAssistantWidget() {
   }
 
   return (
-    <div className="fixed bottom-8 right-8 flex flex-col items-center space-y-4 z-50">
+    <div
+      className="fixed bottom-6 right-6 z-50 flex flex-col items-center gap-3
+        bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-3xl
+        shadow-[0_8px_32px_0_rgba(31,38,135,0.1)] max-w-xs w-full"
+    >
+      <AnimatePresence>
+        {userText && (
+          <motion.div
+            key="user"
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 180, damping: 18 }}
+            className="glass-bubble self-end"
+          >
+            <p className="text-[10px] font-semibold text-white/70 mb-1">You</p>
+            <p className="text-sm font-medium text-white">{userText}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* User Message */}
-      {userText && (
-        <div className="bg-white text-black p-4 rounded-xl max-w-xs text-center shadow-md animate-fadeIn">
-          <p className="font-medium">You:</p>
-          <p className="text-sm">{userText}</p>
-        </div>
-      )}
+      <AnimatePresence>
+        {botReply && (
+          <motion.div
+            key="bot"
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 180, damping: 18, delay: 0.1 }}
+            className="glass-bubble self-start"
+          >
+            <p className="text-[10px] font-semibold text-white/70 mb-1">Assistant</p>
+            <p className="text-sm font-medium text-white">{botReply}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Bot Reply */}
-      {botReply && (
-        <div className="bg-white text-black p-4 rounded-xl max-w-xs text-center shadow-md animate-fadeIn">
-          <p className="font-medium">Bot:</p>
-          <p className="text-sm">{botReply}</p>
-        </div>
-      )}
-
-      {/* Mic Button */}
       <button
         onClick={handleListenClick}
-        className={`w-20 h-20 rounded-full flex items-center justify-center ${
-          isListening ? 'bg-gray-500 animate-pulse' : 'bg-gray-300 hover:bg-gray-400'
-        } shadow-md transition-all duration-300`}
+        aria-label="Activate Voice Assistant"
+        className={`w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all duration-300 ease-in-out
+          ${
+            isListening
+              ? 'bg-white/25 border-white/60 text-white shadow-[0_0_15px_5px_rgba(255,255,255,0.3)] animate-pulse'
+              : 'bg-white/10 border-white/30 text-white hover:bg-white/20 hover:border-white/50'
+          }`}
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-8 w-8"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 1v10m0 0a4 4 0 004-4V5a4 4 0 00-8 0v2a4 4 4 004 4zm0 0v4m-6 4h12"
-          />
-        </svg>
+        <FontAwesomeIcon icon={faMicrophone} className="h-6 w-6" />
       </button>
 
-      {/* Listening Text */}
       {isListening && (
-        <p className="text-gray-500 animate-pulse">Listening...</p>
+        <p className="text-[11px] text-white/60 animate-pulse mt-1 select-none">Listening...</p>
       )}
     </div>
   );
