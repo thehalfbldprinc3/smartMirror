@@ -37,7 +37,6 @@ export async function POST(req: NextRequest) {
       singleEvents: true,
       orderBy: 'startTime',
     });
-    console.log("Fetched Events:", response.data.items);
     return NextResponse.json(response.data.items || []);
   } catch (err) {
     console.error('Google Calendar error:', err);

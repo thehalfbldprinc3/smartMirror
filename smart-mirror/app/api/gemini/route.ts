@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    const cleanedReply = cleanMarkdown(response.text);
+    const cleanedReply = cleanMarkdown(response.text as string);
 
     return NextResponse.json({ reply: cleanedReply });
   } catch (error) {

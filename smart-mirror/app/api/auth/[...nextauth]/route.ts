@@ -17,18 +17,20 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account, user }) {
       if (account) {
-        token.accessToken = account.access_token;
-        token.refreshToken = account.refresh_token;
+        token.accessToken = account.access_token ?? undefined;
+        token.refreshToken = account.refresh_token ?? undefined;
       }
       if (user) {
-        token.email = user.email;
+        token.email = user.email ?? undefined;
       }
       return token;
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
       session.refreshToken = token.refreshToken as string;
-      session.user.email = token.email as string;
+      if(session.user){
+        session.user.email = token.email as string;
+      }
       return session;
     },
   },
